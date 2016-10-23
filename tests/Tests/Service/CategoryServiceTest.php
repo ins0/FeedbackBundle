@@ -106,4 +106,26 @@ class CategoryServiceTest extends ServiceTestCase
         $categoryService->getCategories();
     }
 
+    public function testCategoryServiceWillFindAllCategories()
+    {
+        $categoryTestData = [
+            new Category,
+            new Category,
+            new Category,
+        ];
+
+        $categoryRepository = $this->mockRepository(CategoryRepository::class);
+        $categoryRepository
+            ->expects($this->any())
+            ->method("findAll")
+            ->willReturn($categoryTestData);
+
+        $entityManager = $this->mockEntityManager($categoryRepository, Category::class);
+        $managerRegistry = $this->mockManagerRegistry($entityManager, Category::class);
+
+        $categoryService = new CategoryService($managerRegistry);
+        $returnedCategoryData = $categoryService->getAllCategories();
+
+        $this->assertSame($categoryTestData, $returnedCategoryData);
+    }
 }
